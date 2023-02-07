@@ -1,6 +1,9 @@
 package main
 
 import (
+	"fmt"
+	kafka2 "github.com/Fuzus/imersaofsfc2-simulator/application/kafka"
+	ckafka "gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
 	"log"
 
 	"github.com/Fuzus/imersaofsfc2-simulator/infra/kafka"
@@ -15,22 +18,11 @@ func init() {
 }
 
 func main() {
-
-	producer := kafka.NewKafkaProducer()
-	kafka.Publish("ola", "readtest", producer)
-
-	for {
-		_ = 1
+	msgChain := make(chan *ckafka.Message)
+	consumer := kafka.NewKafkaConsumer(msgChain)
+	go consumer.Consume() //go cria uma nova thread
+	for msg := range msgChain {
+		fmt.Println(string(msg.Value))
+		go kafka2.Produce(msg)
 	}
-
-	// route := route2.Route{
-	// 	ID:       "1",
-	// 	ClientID: "1",
-	// }
-
-	// route.LoadPositions()
-
-	// stringJson, _ := route.ExportJsonPositions()
-
-	// fmt.Println(stringJson[0])
 }
