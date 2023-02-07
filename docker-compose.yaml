@@ -4,7 +4,14 @@ services:
   app:
     build: .
     container_name: simulator
+    networks:
+      - fullcycle
     volumes:
-      - .:/go/src
+      - .:/go/src/
     extra_hosts:
       - "host.docker.internal:172.17.0.1"
+
+networks:
+  fullcycle:
+    name: fullcycle
+    driver: bridge
